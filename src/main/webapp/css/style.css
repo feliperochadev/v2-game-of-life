@@ -41,30 +41,34 @@ header strong{
     display:table-row;
 }
 .cell{
+    font-size:12px;
+    height:20px;
+    min-width:20px;
+    width:20px;
+    display: table-cell;
+    border: 1px solid black;
+}
+.cell-dead{
     background-color:#6087FF;
     cursor:pointer;
-    font-size:12px;
-    height:20px;
-    min-width:20px;
-    width:20px;
-    display: table-cell;
-    border: 1px solid black;
 }
-.cell:hover{
+.cell-dead:hover{
     background-color:#00F;
 }
-.cell-alive{
+.cell-live{
     background-color:#6FFF84;
     cursor:pointer;
-    font-size:12px;
-    height:20px;
-    min-width:20px;
-    width:20px;
-    display: table-cell;
-    border: 1px solid black;
 }
-.cell-alive:hover{
+.cell-live:hover{
     background-color:#006600;
+}
+.cell-dead-disable{
+    background-color:#6087FF;
+    cursor:not-allowed;
+}
+.cell-live-disable{
+    background-color:#6FFF84;
+    cursor:not-allowed;
 }
 
 

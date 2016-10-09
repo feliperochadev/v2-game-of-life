@@ -14,11 +14,4 @@ class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer  {
     void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/gameoflife-websocket").withSockJS()
     }
-
-    @Override
-    void configureMessageBroker(MessageBrokerRegistry config)
-    {
-        config.enableSimpleBroker("/v2/game-of-life")
-        config.setApplicationDestinationPrefixes("/v2/game-of-life")
-    }
 }

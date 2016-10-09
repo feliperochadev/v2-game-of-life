@@ -1,25 +1,18 @@
 (function (angular) {
-    angular.module("gameOfLife").controller("gameOfLifeController", Controller)
-    function Controller($scope, $http, config) {
-        var stompClient = null
+    angular.module("gameOfLife").controller("gameOfLifeController", function Controller($scope, gameService) {
         var loadConfig = function (config) {
             $scope.config = config
             $scope.loadGame = loadGame
             $scope.startGame = startGame
             $scope.stopGame = stopGame
             $scope.generateRandom = generateRandom
+            $scope.cellClick = cellClick
+            $scope.cellHold = cellHold
             loadGame(config)
         }
         var loadGame = function (config) {
             if (config.columns <= 40 && config.rows <= 40) {
-                config.cells = []
-                for (var y = 0; y < config.rows; y++) {
-                    config.cells[y] = []
-                    for (var x = 0; x < config.columns; x++) {
-                        config.cells[y][x] = {y: y, x: x, alive: false}
-                    }
-                }
-                $scope.config = config
+                gameService.loadGame(config)
             }
             else {
                 $scope.errors = {
@@ -28,55 +21,40 @@
                 }
             }
         }
-        var generateRandom = function (config) {
-            for (var y = 0; y < config.cells.length; y++) {
-                for (var x = 0; x < config.cells[y].length; x++) {
-                    config.cells[y][x].alive = Math.floor(Math.random() * 10) % 2 === 0
-                }
+        var stopGame = function () {
+            gameService.stopGame()
+        }
+        var startGame = function () {
+            gameService.startGame(onUpdate, onConnected)
+        }
+        var generateRandom = function () {
+            gameService.generateRandom()
+        }
+        var cellClick = function (gameRunning, cell) {
+            if (!gameRunning) {
+                cell.alive = !cell.alive
             }
-            $scope.config = config
         }
-
-        function generateGUID() {
-            return ("_" + S4() + S4() + "-" + S4() + "-4" + S4().substr(0, 3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase()
+        var cellHold = function (gameRunning, mouseHold, cell) {
+            if (!gameRunning && mouseHold) {
+                cell.alive = true
+            }
         }
-
-        function S4() {
-            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
-        }
-
-        var startGame = function (config) {
-            config.gameRunning = true
-            config.id = generateGUID()
-            var socket = new SockJS('/gameoflife-websocket')
-            stompClient = Stomp.over(socket)
-            stompClient.connect({}, function () {
-                stompClient.subscribe("/v2/game-of-life/subscribe/"+config.id, function (data) {
-                    $scope.$apply(function () {
-                        var gameConfig = JSON.parse(data.body)
-                        config.cells = gameConfig.cells
-                        config.steps = gameConfig.steps
-                        config.gameRunning = gameConfig.gameRunning
-                        $scope.config = config
-                        if (!config.gameRunning) {
-                            stompClient.disconnect()
-                            console.log("Game Finished")
-                        }
-                    })
-                })
-                $http.post("/api/v2/game-of-life/"+config.id, config)
-                    .success(function (){console.log("Game Started")})
-                    .error(function (data) {
-                        $scope.errors = {message: "Error: " + data.message, visible: true}
-                        stopGame(config)})
+        var onUpdate = function (gameConfigReturn, config) {
+            $scope.$apply(function () {
+                config.cells = gameConfigReturn.cells
+                config.steps = gameConfigReturn.steps
+                config.gameRunning = gameConfigReturn.gameRunning
             })
         }
-        var stopGame = function (config) {
-            config.gameRunning = false
-            $scope.config = config
-            stompClient.disconnect()
-            console.log("Game Stopped")
+        var onConnected = function (httpRequest) {
+            httpRequest.success(function () {
+                console.log("Game Started")
+            }).error(function (data) {
+                $scope.errors = {message: "Error: " + data.message, visible: true}
+                stopGame()
+            })
         }
-        loadConfig(config)
-    }
+        loadConfig(gameService.getConfig())
+    })
 })(angular)

@@ -32,7 +32,7 @@ class GameOfLifeService {
             gameConfig.cells = createNextGeneration(gameConfig.cells)
             gameConfig.steps--
             gameConfig.gameRunning = gameConfig.steps > 0
-            messagingTemplate.convertAndSend("/v2/game-of-life/subscribe/$gameConfig.id" as String, gameConfig)
+            messagingTemplate.convertAndSend("/queue/subscribe/$gameConfig.id" as String, gameConfig)
             sleep(gameConfig.delay)
         }
     }
