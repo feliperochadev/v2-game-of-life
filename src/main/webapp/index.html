@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="gameOfLife">
+
+<head>
+    <title>Conway's Game of Life by Felipe Rocha</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body class="jumbotron center" ng-controller="gameOfLifeController">
+<header>
+    <h2>Conway's Game of Life</h2>
+    <strong>How to play: define the number of steps and click on the cells that you want to fill, or click on the</strong>
+    <br/>
+    <strong>Generate Random button to generate randomly the living cells, then on click Start</strong>
+    <div class="alert alert-danger" ng-show="errors.visible">
+        <button type="button" class="close" aria-label="Close" ng-click="errors.visible = false; errors.message=''">
+            <span aria-hidden="true">&times;</span></button>
+        <h4>{{errors.message}}</h4>
+    </div>
+</header>
+<section class="container-fluid">
+    <form class="form-inline" name="configForm">
+        <fieldset ng-disabled="config.gameRunning">
+            <div class="div-value row" ng-disabled="config.gameRunning">
+                <label>Nº of steps:</label>
+                <input class="form-control" type="number" name="steps" placeholder="0" ng-model="config.steps"
+                       ng-required="true">
+                <label>Delay in milliseconds
+                    <small>(min is 100):</small>
+                </label>
+                <input class="form-control" type="number" name="delay" placeholder="0" ng-model="config.delay"
+                       ng-required="true" min="100">
+            </div>
+            <div class="div-value row">
+                <label>Nº of cells in y-axis
+                    <small>(max is 40):</small>
+                </label>
+                <input class="form-control" type="number" name="columns" placeholder="0" ng-model="config.columns"
+                       ng-required="true" ng-keyup="loadGame(config)" min="1" max="40">
+                <label>Nº of cells in x-axis
+                    <small>(max is 40):</small>
+                </label>
+                <input class="form-control" type="number" name="rows" placeholder="0" ng-model="config.rows"
+                       ng-required="true" ng-keyup="loadGame(config)" min="1" max="40">
+            </div>
+        </fieldset>
+        <div class="div-button row">
+            <button class="btn btn-info" ng-show="!config.gameRunning" ng-click="generateRandom(config)">Generate
+                Random
+            </button>
+            <button class="btn btn-warning" ng-show="!config.gameRunning"
+                    ng-disabled="config.rows > 40 || config.columns > 40"
+                    ng-click="loadGame(config)">Remove All
+            </button>
+            <button class="btn btn-success" ng-show="!config.gameRunning"
+                    ng-disabled="configForm.$invalid || config.steps < 1" ng-click="startGame(config)">
+                Start
+            </button>
+            <button class="btn btn-danger" ng-show="config.gameRunning" ng-click="stopGame(config)">Stop</button>
+        </div>
+    </form>
+</section>
+<section>
+    <div class="div-game-panel">
+        <div class="div-game-row" ng-repeat="cell in config.cells">
+            <div class="cell" ng-repeat="cell in cell" id="{{cell.y}}_{{cell.x}}"
+                 ng-class="cell.alive ? 'cell-alive' : 'cell'" ng-click="cell.alive = !cell.alive">
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+<script src="lib/angular/angular.min.js"></script>
+<script src="//cdn.jsdelivr.net/sockjs/1/sockjs.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="js/app.js"></script>
+<script src="js/config.js"></script>
+<script src="js/controller.js"></script>
+</html>
