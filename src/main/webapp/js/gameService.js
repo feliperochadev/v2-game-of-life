@@ -1,7 +1,11 @@
 (function(angular) {
     angular.module("gameOfLife").factory("gameService", function ($http, config) {
         var _stompClient = null
+        var defaultSteps = config.steps
         var _loadGame = function (config) {
+            if(config.steps <= 0) {
+                config.steps = defaultSteps
+            }
             config.cells = []
             for (var y = 0; y < config.rows; y++) {
                 config.cells[y] = []
@@ -11,6 +15,9 @@
             }
         }
         var _generateRandom = function () {
+            if(config.steps <= 0) {
+                config.steps = defaultSteps
+            }
             for (var y = 0; y < config.cells.length; y++) {
                 for (var x = 0; x < config.cells[y].length; x++) {
                     config.cells[y][x].alive = Math.floor(Math.random() * 10) % 2 === 0
