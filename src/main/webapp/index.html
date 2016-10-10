@@ -10,7 +10,7 @@
 <body class="jumbotron center" ng-controller="gameOfLifeController">
 <header>
     <h2>Conway's Game of Life Version 2</h2>
-    <strong>How to play: define the number of steps and click (you can click and hold too) on the cells that you want to live,</strong>
+    <strong>How to play: define the number of steps and click on the cells that you want to live (you can click and hold too),</strong>
     <br/>
     <strong>or click on theGenerate Random button to generate randomly the living cells, then on click Start</strong>
     <div class="alert alert-danger" ng-show="errors.visible">
@@ -33,13 +33,13 @@
                        ng-required="true" min="100">
             </div>
             <div class="div-value row">
-                <label>Nº of cells in y-axis
-                    <small>(max is 40):</small>
+                <label>Nº of cells in columns
+                    <small>(x-axis, max is 40):</small>
                 </label>
                 <input class="form-control" type="number" name="columns" placeholder="0" ng-model="config.columns"
                        ng-required="true" ng-keyup="loadGame(config)" min="1" max="40">
-                <label>Nº of cells in x-axis
-                    <small>(max is 40):</small>
+                <label>Nº of cells in rows
+                    <small>(y-axis, max is 40):</small>
                 </label>
                 <input class="form-control" type="number" name="rows" placeholder="0" ng-model="config.rows"
                        ng-required="true" ng-keyup="loadGame(config)" min="1" max="40">
