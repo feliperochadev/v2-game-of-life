@@ -22,7 +22,7 @@
             }
         }
         var stopGame = function () {
-            gameService.stopGame()
+            gameService.stopGame(onGameStopped)
         }
         var startGame = function () {
             gameService.startGame(onUpdate, onConnected)
@@ -53,6 +53,13 @@
             }).error(function (data) {
                 $scope.errors = {message: "Error: " + data.message, visible: true}
                 stopGame()
+            })
+        }
+        var onGameStopped = function (httpRequest) {
+            httpRequest.success(function () {
+                console.log("Game Stopped")
+            }).error(function (data) {
+                $scope.errors = {message: "Error: " + data.message, visible: true}
             })
         }
         loadConfig(gameService.getConfig())

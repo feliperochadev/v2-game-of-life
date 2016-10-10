@@ -33,10 +33,10 @@
                 onConnected($http.post("/api/v2/game-of-life/" + config.id, config))
             })
         }
-        var _stopGame = function () {
+        var _stopGame = function (onGameStopped) {
+            onGameStopped($http.delete("/api/v2/game-of-life/" + config.id))
             config.gameRunning = false
             _stompClient.disconnect()
-            console.log("Game Stopped")
         }
         var _getConfig = function () {
             return config
