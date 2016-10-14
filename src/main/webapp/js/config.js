@@ -5,7 +5,7 @@
         columns: 30,
         rows: 20,
         gameRunning: false,
-        id: "",
+        idOnline: {id: ""},
         cells: []
     })
 })(angular)

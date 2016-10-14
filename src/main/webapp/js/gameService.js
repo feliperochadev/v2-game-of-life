@@ -26,10 +26,10 @@
         }
         var _startGame = function (onUpdate, onConnected) {
             config.gameRunning = true
-            config.id = _generateGUID()
+            config.idOnline.id = _generateGUID()
             _stompClient = Stomp.over(new SockJS('/gameoflife-websocket'))
             _stompClient.connect({}, function () {
-                _stompClient.subscribe("/queue/subscribe/" + config.id, function (data) {
+                _stompClient.subscribe("/queue/subscribe/" + config.idOnline.id, function (data) {
                     var gameConfigReturn = JSON.parse(data.body)
                     onUpdate(gameConfigReturn, config)
                     if (!gameConfigReturn.gameRunning) {
@@ -37,11 +37,11 @@
                         console.log("Game Finished")
                     }
                 })
-                onConnected($http.post("/api/v2/game-of-life/" + config.id, config))
+                onConnected($http.post("/api/v2/game-of-life/" + config.idOnline.id, config))
             })
         }
         var _stopGame = function (onGameStopped) {
-            onGameStopped($http.delete("/api/v2/game-of-life/" + config.id))
+            onGameStopped($http.delete("/api/v2/game-of-life/" + config.idOnline.id))
             config.gameRunning = false
             _stompClient.disconnect()
         }

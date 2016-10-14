@@ -1,6 +1,7 @@
 package com.feliperocha.gameoflife.configurations
 
 import com.feliperocha.gameoflife.domains.Cell
+import com.feliperocha.gameoflife.domains.IdOnline
 import org.hibernate.validator.constraints.NotEmpty
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotNull
@@ -8,7 +9,7 @@ import javax.validation.constraints.NotNull
 class GameConfig {
 
     @NotNull
-    String id
+    IdOnline idOnline
 
     @NotNull
     Integer steps

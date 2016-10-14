@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 class GameOfLifeService {
 
     @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    private SimpMessagingTemplate messagingTemplate
 
     @Autowired
     private IdOnlineRepository idOnlineRepository
@@ -29,25 +29,22 @@ class GameOfLifeService {
     }
 
     @Async
-    void runGameWS(GameConfig gameConfig)
-    {
-        idOnlineRepository.addId(gameConfig.id)
-        while(gameConfig.steps > 0 && gameConfig.gameRunning)
+    void runGame(GameConfig gameConfig) {
+        idOnlineRepository.save(gameConfig.idOnline)
+        while(gameConfig.gameRunning)
         {
             gameConfig.cells = createNextGeneration(gameConfig.cells)
             gameConfig.steps--
-            gameConfig.gameRunning = gameConfig.steps > 0 && idOnlineRepository.contains(gameConfig.id)
-            messagingTemplate.convertAndSend("/queue/subscribe/$gameConfig.id" as String, gameConfig)
+            gameConfig.gameRunning = gameConfig.steps > 0 && idOnlineRepository.exists(gameConfig.idOnline.id)
+            messagingTemplate.convertAndSend("/queue/subscribe/$gameConfig.idOnline.id" as String, gameConfig)
             sleep(gameConfig.delay)
         }
-        if(idOnlineRepository.contains(gameConfig.id)) {
-            idOnlineRepository.deleteId(gameConfig.id)
+        if(idOnlineRepository.exists(gameConfig.idOnline.id)) {
+            deleteGame(gameConfig.idOnline.id)
         }
     }
 
-    void stopGameWS(String id)
-    {
-        idOnlineRepository.deleteId(id)
+    void deleteGame(String id) {
+        idOnlineRepository.delete(id)
     }
-
 }

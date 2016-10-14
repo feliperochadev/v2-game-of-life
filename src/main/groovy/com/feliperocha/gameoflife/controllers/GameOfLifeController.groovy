@@ -24,12 +24,12 @@ class GameOfLifeController {
     }
 
     @RequestMapping(value="/api/v2/game-of-life/{id}", method=RequestMethod.POST)
-    def startGameWS(@Valid @RequestBody GameConfig gameConfig){
-        gameOfLiveService.runGameWS(gameConfig)
+    def startGame(@Valid @RequestBody GameConfig gameConfig){
+        gameOfLiveService.runGame(gameConfig)
     }
 
     @RequestMapping(value="/api/v2/game-of-life/{id}", method=RequestMethod.DELETE)
-    def stopGameWS(@PathVariable(value="id") String id){
-        gameOfLiveService.stopGameWS(id)
+    def stopGame(@PathVariable(value="id") String id){
+        gameOfLiveService.deleteGame(id)
     }
 }

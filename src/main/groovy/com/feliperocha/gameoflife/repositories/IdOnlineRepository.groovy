@@ -1,22 +1,10 @@
 package com.feliperocha.gameoflife.repositories
+
+import com.feliperocha.gameoflife.domains.IdOnline
+import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-class IdOnlineRepository {
-   def ids = new ArrayList<String>()
+interface IdOnlineRepository extends CrudRepository<IdOnline, String> {
 
-    def contains(String id)
-    {
-        ids.contains(id)
-    }
-
-    def addId(String id)
-    {
-        ids.add(id)
-    }
-
-    def deleteId(String id)
-    {
-        ids.remove(id)
-    }
 }
