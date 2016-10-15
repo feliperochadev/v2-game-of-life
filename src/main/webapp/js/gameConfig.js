@@ -1,5 +1,5 @@
 (function (angular) {
-    angular.module("gameOfLife").value("config", {
+    angular.module("gameOfLife").value("gameConfig", {
         steps: 10,
         delay: 500,
         columns: 30,

@@ -14,62 +14,69 @@
     <br/>
     <strong>or click on theGenerate Random button to generate randomly the living cells, then on click Start</strong>
     <div class="alert alert-danger" ng-show="errors.visible">
-        <button type="button" class="close" aria-label="Close" ng-click="errors.visible = false; errors.message=''">
+        <button type="button" class="close close-button" aria-label="Close" ng-click="errors.visible = false; errors.message=''">
             <span aria-hidden="true">&times;</span></button>
         <h4>{{errors.message}}</h4>
+    </div>
+    <div class="alert alert-success" ng-show="gameStatus.visible">
+        <button type="button" class="close close-button" aria-label="Close" ng-click="gameStatus.visible = false; gameStatus.message=''">
+            <span aria-hidden="true">&times;</span></button>
+        <h4>{{gameStatus.message}}</h4>
     </div>
 </header>
 <section class="container-fluid">
     <form class="form-inline" name="configForm">
-        <fieldset ng-disabled="config.gameRunning">
-            <div class="div-value row" ng-disabled="config.gameRunning">
+        <fieldset ng-disabled="gameConfig.gameRunning">
+            <div class="div-value row" ng-disabled="gameConfig.gameRunning">
                 <label>Nº of steps:</label>
-                <input class="form-control" type="number" name="steps" placeholder="0" ng-model="config.steps"
+                <input class="form-control" type="number" name="steps" placeholder="0" ng-model="gameConfig.steps"
                        ng-required="true">
                 <label>Delay in milliseconds
                     <small>(min is 100):</small>
                 </label>
-                <input class="form-control" type="number" name="delay" placeholder="0" ng-model="config.delay"
+                <input class="form-control" type="number" name="delay" placeholder="0" ng-model="gameConfig.delay"
                        ng-required="true" min="100">
             </div>
             <div class="div-value row">
                 <label>Nº of cells in columns
-                    <small>(x-axis, max is 40):</small>
+                    <small>(x-axis, max is 50):</small>
                 </label>
-                <input class="form-control" type="number" name="columns" placeholder="0" ng-model="config.columns"
-                       ng-required="true" ng-keyup="loadGame(config)" min="1" max="40">
+                <input class="form-control" type="number" name="columns" placeholder="0" ng-model="gameConfig.columns"
+                       ng-required="true" ng-change="gameConfig.columns <= 50 && loadGame(gameConfig)" min="1" max="50">
                 <label>Nº of cells in rows
-                    <small>(y-axis, max is 40):</small>
+                    <small>(y-axis, max is 50):</small>
                 </label>
-                <input class="form-control" type="number" name="rows" placeholder="0" ng-model="config.rows"
-                       ng-required="true" ng-keyup="loadGame(config)" min="1" max="40">
+                <input class="form-control" type="number" name="rows" placeholder="0" ng-model="gameConfig.rows"
+                       ng-required="true" ng-change="gameConfig.rows <= 50 && loadGame(gameConfig)" min="1" max="50">
             </div>
         </fieldset>
         <div class="div-button row">
-            <button class="btn btn-info" ng-show="!config.gameRunning" ng-click="generateRandom()">Generate
+            <button class="btn btn-info" ng-show="!gameConfig.gameRunning"
+                    ng-disabled="configForm.$invalid"
+                    ng-click="generateRandom(gameConfig)">Generate
                 Random
             </button>
-            <button class="btn btn-warning" ng-show="!config.gameRunning"
-                    ng-disabled="config.rows > 40 || config.columns > 40"
-                    ng-click="loadGame(config)">Remove All
+            <button class="btn btn-warning" ng-show="!gameConfig.gameRunning"
+                    ng-disabled="configForm.$invalid"
+                    ng-click="loadGame(gameConfig)">Remove All
             </button>
-            <button class="btn btn-success" ng-show="!config.gameRunning"
-                    ng-disabled="configForm.$invalid || config.steps < 1" ng-click="startGame()">
+            <button class="btn btn-success" ng-show="!gameConfig.gameRunning"
+                    ng-disabled="configForm.$invalid || gameConfig.steps < 1" ng-click="startGame()">
                 Start
             </button>
-            <button class="btn btn-danger" ng-show="config.gameRunning" ng-click="stopGame()">Stop</button>
+            <button class="btn btn-danger" ng-show="gameConfig.gameRunning" ng-click="stopGame()">Stop</button>
         </div>
     </form>
 </section>
 <section class="div-game-panel" ng-mousedown="mouseHold = true" ng-mouseup="mouseHold = false" >
-    <div class="div-game-row" ng-repeat="cell in config.cells">
-        <div class="cell" ng-repeat="cell in cell" id="{{cell.y}}_{{cell.x}}"
-             ng-class="{'cell-dead': !cell.alive && !config.gameRunning,
-                 'cell-live': cell.alive && !config.gameRunning,
-                 'cell-dead-disable': !cell.alive && config.gameRunning,
-                 'cell-live-disable': cell.alive && config.gameRunning}"
-             ng-click="cellClick(config.gameRunning, cell)"
-             ng-mouseover="cellHold(config.gameRunning, mouseHold, cell)" >
+    <div class="div-game-row" ng-repeat="cell in gameConfig.cells track by $index">
+        <div class="cell" ng-repeat="cell in cell track by $index" id="{{cell.y}}_{{cell.x}}"
+             ng-class="{'cell-dead': !cell.alive && !gameConfig.gameRunning,
+                 'cell-live': cell.alive && !gameConfig.gameRunning,
+                 'cell-dead-disable': !cell.alive && gameConfig.gameRunning,
+                 'cell-live-disable': cell.alive && gameConfig.gameRunning}"
+             ng-click="cellClick(gameConfig.gameRunning, cell)"
+             ng-mouseover="cellHold(gameConfig.gameRunning, mouseHold, cell)" >
         </div>
     </div>
 </section>
@@ -78,7 +85,8 @@
 <script src="//cdn.jsdelivr.net/sockjs/1/sockjs.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script src="js/app.js"></script>
-<script src="js/config.js"></script>
+<script src="js/gameConfig.js"></script>
+<script src="js/webSocketConfig.js"></script>
 <script src="js/gameService.js"></script>
 <script src="js/controller.js"></script>
 </html>

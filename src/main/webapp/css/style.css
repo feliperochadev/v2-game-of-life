@@ -2,10 +2,20 @@ header strong{
     font-size: 12px;
     color:  blue;
 }
-.alert
+.alert{
+    margin: 10px auto 0;
+    height: 50px;
+}
+.alert-danger
 {
     width: 70%;
-    margin: 0 auto;
+}
+.alert-success
+{
+    width: 200px;
+}
+.close-button{
+    margin-top: -10px;
 }
 .jumbotron{
     width: 80%;
@@ -13,32 +23,6 @@ header strong{
 }
 .center{
     text-align: center;
-}
-.div-value{
-    margin: 20px 0 20px 0;
-    display: block;
-}
-.div-value label{
-    font-size: 13px;
-    width: 25%;
-    text-align: right;
-}
-.div-value input{
-    max-width: 80px;
-}
-.div-button button{
-    width: 135px;
-    margin: 10px 10px 10px 10px;
-    font-weight: bold;  
-    font-size: 13px;
-}
-.div-game-panel{
-    display: table;
-    border-collapse:collapse;
-    margin: 0 auto;
-}
-.div-game-row{  
-    display:table-row;
 }
 .cell{
     font-size:12px;
@@ -69,6 +53,32 @@ header strong{
 .cell-live-disable{
     background-color:#6FFF84;
     cursor:not-allowed;
+}
+.div-value{
+    margin: 20px 0 20px 0;
+    display: block;
+}
+.div-value label{
+    font-size: 12px;
+    width: 220px;
+    text-align: right;
+}
+.div-value input{
+    width: 80px !important;
+}
+.div-button button{
+    width: 135px;
+    margin: 10px 10px 10px 10px;
+    font-weight: bold;
+    font-size: 13px;
+}
+.div-game-panel{
+    display: table;
+    border-collapse:collapse;
+    margin: 0 auto;
+}
+.div-game-row{
+    display:table-row;
 }
 
 

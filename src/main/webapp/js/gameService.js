@@ -1,69 +1,57 @@
 (function(angular) {
-    angular.module("gameOfLife").factory("gameService", function ($http, config) {
-        var _stompClient = null
-        var defaultSteps = config.steps
-        var _loadGame = function (config) {
-            if(config.steps <= 0) {
-                config.steps = defaultSteps
+    angular.module("gameOfLife").service("gameService", function ($http, gameConfig, webSocketConfig) {
+        this.startGame = function (onGameUpdated, onGameStarted, onError) {
+            gameConfig.gameRunning = true
+            gameConfig.idOnline.id = _generateGUID()
+            var apiEndpoint = "/api/v2/game-of-life/" + gameConfig.idOnline.id
+            var queueEndpoint = "/queue/subscribe/" + gameConfig.idOnline.id
+            if (webSocketConfig.isConnected()) {
+                webSocketConfig.subscribe(_onSubscribedGame, onGameUpdated, queueEndpoint)
+                onGameStarted($http.post(apiEndpoint, gameConfig))
             }
-            config.cells = []
-            for (var y = 0; y < config.rows; y++) {
-                config.cells[y] = []
-                for (var x = 0; x < config.columns; x++) {
-                    config.cells[y][x] = {y: y, x: x, alive: false}
-                }
-            }
-        }
-        var _generateRandom = function () {
-            if(config.steps <= 0) {
-                config.steps = defaultSteps
-            }
-            for (var y = 0; y < config.cells.length; y++) {
-                for (var x = 0; x < config.cells[y].length; x++) {
-                    config.cells[y][x].alive = Math.floor(Math.random() * 10) % 2 === 0
-                }
+            else {
+                webSocketConfig.connect(function onConnected() {
+                    webSocketConfig.subscribe(_onSubscribedGame, onGameUpdated, queueEndpoint)
+                    onGameStarted($http.post(apiEndpoint, gameConfig))
+                }, onError, "/gameoflife-websocket")
             }
         }
-        var _startGame = function (onUpdate, onConnected) {
-            config.gameRunning = true
-            config.idOnline.id = _generateGUID()
-            _stompClient = Stomp.over(new SockJS('/gameoflife-websocket'))
-            _stompClient.connect({}, function () {
-                _stompClient.subscribe("/queue/subscribe/" + config.idOnline.id, function (data) {
-                    var gameConfigReturn = JSON.parse(data.body)
-                    onUpdate(gameConfigReturn, config)
-                    if (!gameConfigReturn.gameRunning) {
-                        _stompClient.disconnect()
-                        console.log("Game Finished")
-                    }
-                })
-                onConnected($http.post("/api/v2/game-of-life/" + config.idOnline.id, config))
-            })
+
+        this.stopGame = function (onGameStopped) {
+            webSocketConfig.disconnect()
+            onGameStopped($http.delete("/api/v2/game-of-life/" + gameConfig.idOnline.id))
+            gameConfig.gameRunning = false
         }
-        var _stopGame = function (onGameStopped) {
-            onGameStopped($http.delete("/api/v2/game-of-life/" + config.idOnline.id))
-            config.gameRunning = false
-            _stompClient.disconnect()
+
+        var _onSubscribedGame = function (onGameUpdated, data) {
+            var gameConfigReturn = JSON.parse(data.body)
+            onGameUpdated(gameConfigReturn, gameConfig)
+            if (!gameConfigReturn.gameRunning) {
+                webSocketConfig.unsubscribe()
+            }
         }
-        var _getConfig = function () {
-            return config
+
+        var _defaultQuantityOfSteps = gameConfig.steps
+
+        this.checkQuantityOfSteps = function() {
+            if(gameConfig.steps <= 0) {
+                gameConfig.steps = _defaultQuantityOfSteps
+            }
         }
-        var _generateGUID = function () {
+
+        this.getGameConfig = function () {
+            return gameConfig
+        }
+
+       var _generateGUID = function  () {
             function s4() {
                 return Math.floor((1 + Math.random()) * 0x10000)
                     .toString(16)
-                    .substring(1);
+                    .substring(1)
             }
-
             return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-                s4() + '-' + s4() + s4() + s4();
+                s4() + '-' + s4() + s4() + s4()
         }
-        return {
-            loadGame: _loadGame,
-            generateRandom: _generateRandom,
-            startGame: _startGame,
-            stopGame: _stopGame,
-            getConfig: _getConfig
-        }
+
     })
 })(angular)
