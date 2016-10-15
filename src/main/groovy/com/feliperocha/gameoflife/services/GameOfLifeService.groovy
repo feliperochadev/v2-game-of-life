@@ -19,10 +19,11 @@ class GameOfLifeService {
 
     def createNextGeneration(Cell[][] cells) {
         def newGeneration = new Cell[cells.length][cells[0].length]
-        for (int y = 0; y < cells.length; y++) {
-            for (int x = 0; x < cells[y].length; x++) {
-                def cell = new Cell(y: cells[y][x].y, x: cells[y][x].x, alive: cells[y][x].alive)
-                newGeneration[y][x] = cell.checkIfLiveOrDie(cell, cell.getNeighbors(cell, cells))
+        cells.each{ cellRow ->
+            cellRow.each{ cell ->
+                def newCell = new Cell(y: cell.y, x: cell.x, alive: cell.alive)
+                newGeneration[cell.y][cell.x] = newCell
+                        .checkIfLiveOrDie(newCell, newCell.getNeighbors(newCell, cells))
             }
         }
         newGeneration
@@ -31,20 +32,29 @@ class GameOfLifeService {
     @Async
     void runGame(GameConfig gameConfig) {
         idOnlineRepository.save(gameConfig.idOnline)
-        while(gameConfig.gameRunning)
-        {
-            gameConfig.cells = createNextGeneration(gameConfig.cells)
-            gameConfig.steps--
-            gameConfig.gameRunning = gameConfig.steps > 0 && idOnlineRepository.exists(gameConfig.idOnline.id)
-            messagingTemplate.convertAndSend("/queue/subscribe/$gameConfig.idOnline.id" as String, gameConfig)
-            sleep(gameConfig.delay)
-        }
-        if(idOnlineRepository.exists(gameConfig.idOnline.id)) {
-            deleteGame(gameConfig.idOnline.id)
-        }
+        def runStep = { GameConfig gameConfigCurrent ->
+            if(gameConfigCurrent.gameRunning)
+            {
+                gameConfigCurrent.cells = createNextGeneration(gameConfigCurrent.cells)
+                gameConfigCurrent.steps--
+                gameConfigCurrent.gameRunning = gameConfigCurrent.steps > 0 &&
+                        idOnlineRepository.exists(gameConfigCurrent.idOnline.id)
+                messagingTemplate.convertAndSend(
+                        "/queue/subscribe/$gameConfigCurrent.idOnline.id" as String, gameConfigCurrent)
+                sleep(gameConfigCurrent.delay)
+                trampoline(gameConfigCurrent)
+            }
+            else
+            {
+                deleteGame(gameConfig.idOnline.id)
+            }
+        }.trampoline()
+        runStep(gameConfig)
     }
 
     void deleteGame(String id) {
-        idOnlineRepository.delete(id)
+        if(idOnlineRepository.exists(id)) {
+            idOnlineRepository.delete(id)
+        }
     }
 }
