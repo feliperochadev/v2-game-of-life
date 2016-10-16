@@ -15,7 +15,7 @@ JDK 1.8.
 
 Groovy 2.4.7.
 
-npm and gulp
+npm
 
 To update npm packages run:
 ```
