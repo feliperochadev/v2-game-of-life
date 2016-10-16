@@ -1,0 +1,30 @@
+{
+  "name": "v2-game-of-life",
+  "version": "1.0.0",
+  "description": "##Demo:  https://v2-gameoflife-feliperocha.herokuapp.com/",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/feliperochadev/v2-game-of-life.git"
+  },
+  "author": "feliperochadev",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/feliperochadev/v2-game-of-life/issues"
+  },
+  "homepage": "https://github.com/feliperochadev/v2-game-of-life#readme",
+  "dependencies": {
+    "angular": "^1.5.8",
+    "sockjs-client": "^1.1.1",
+    "stompjs": "^2.3.3"
+  },
+  "devDependencies": {
+    "browserify": "^13.1.0",
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.7",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}
