@@ -1,7 +1,6 @@
 'use strict'
-/*if cdn is off uncomment here:
 var SockJS = require('sockjs-client')
-var Stomp = require('stompjs') */
+var Stomp = require('stompjs')
 module.exports = function() {
     var _stompClient
     var _connected = false

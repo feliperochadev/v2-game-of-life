@@ -27,7 +27,8 @@ module.exports = function ($scope, $timeout, gameService) {
     var generateRandom = function (gameConfig) {
         for (var y = 0; y < gameConfig.cells.length; y++) {
             for (var x = 0; x < gameConfig.cells[y].length; x++) {
-                gameConfig.cells[y][x].alive = Math.floor(Math.random() * 10) % 2 === 0
+                gameConfig.cells[y][x].alive =
+                    Math.floor(Math.random() * 10) % 2 === 0
             }
         }
         gameService.checkQuantityOfSteps()

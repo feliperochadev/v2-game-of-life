@@ -42,12 +42,18 @@ class GameOfLifeServiceTests {
         cells[4][2] = new Cell(y: 4, x: 2, alive: false)
         cells[4][3] = new Cell(y: 4, x: 3, alive: false)
         cells[4][4] = new Cell(y: 4, x: 4, alive: false)
-        int i = 0
         (0..9).each {
-            gameOfLifeServices.createNextGeneration(cells)
-            i++
+            cells = gameOfLifeServices.createNextGeneration(cells)
         }
-        assert i == 10
+        assert(!cells[0][0].alive && !cells[0][1].alive && !cells[0][2].alive &&
+                !cells[0][3].alive && !cells[0][4].alive && !cells[1][0].alive &&
+                cells[1][1].alive && !cells[1][2].alive && !cells[1][3].alive &&
+                !cells[1][4].alive && !cells[2][0].alive && !cells[2][1].alive &&
+                !cells[2][2].alive && !cells[2][3].alive && !cells[2][4].alive &&
+                !cells[3][0].alive && cells[3][1].alive && !cells[3][2].alive &&
+                !cells[3][3].alive && !cells[3][4].alive && !cells[4][0].alive &&
+                !cells[4][1].alive && !cells[4][2].alive && !cells[3][3].alive &&
+                !cells[4][4].alive)
     }
 
 }
